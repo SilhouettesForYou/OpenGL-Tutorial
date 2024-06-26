@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 VertexArray::VertexArray()
 {
@@ -24,7 +25,10 @@ void VertexArray::AddBuffer(const VertexBuffer &vb, const VertexBufferLayout &la
         GLCall(glEnableVertexAttribArray(i));
         GLCall(glVertexAttribPointer(i, element.count, element.type,
             element.normalized, layout.GetStride(), (const void*)offset));
-        offset += element.count;
+        // 需要指定属性相对于数组起点`0`的偏移量
+        // 这里的layout的布局是 position | uv
+        // position的偏移量是 0，那么 uv 的偏移量是 position 分量大小乘上类型的大小
+        offset += element.count * sizeof(float);
     }
 }
 

@@ -1,4 +1,3 @@
-#include "Renderer.h"
 #include <vector>
 
 struct VertexBufferElement
@@ -15,7 +14,7 @@ struct VertexBufferElement
             case GL_UNSIGNED_INT: return 4;
             case GL_UNSIGNED_BYTE: return 1;
         }
-        ASSERT(false);
+        // ASSERT(false);
         return 0;
     }
 };
