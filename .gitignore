@@ -1,4 +1,7 @@
 .xmake/*
 build/*
-dependence/*
+dependence/glew-2.1.0
+dependence/glfw-3.4.bin.WIN32
+dependence/glfw-3.4.bin.WIN64
+dependence/glm
 .vscode/*

@@ -1,10 +1,10 @@
 set_project("OpenGL Tutorial")
 set_languages("c++23")
-add_rules("mode.debug", "mode.releasedbg")
+add_rules("mode.debug", "mode.release")
 
 target("HelloOpenGL")
     set_kind("binary")
-    add_files("src/*.cpp")
+    add_files("src/*.cpp", "/dependence/imgui/*.cpp")
     add_includedirs("src")
     add_includedirs("/dependence")
     add_includedirs("/dependence/glfw-3.4.bin.WIN64/include")

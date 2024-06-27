@@ -60,17 +60,38 @@ target("HelloOpenGL")
   * 调用 Draw Call 时需要顶点数组、索引缓冲区、着色器
   * 解绑不是必要的，解绑只会浪费性能
   * 正常会用材质替换着色器
-* 如何通过 OpenGL 将硬盘中的 png 图片显示到屏幕上（png并不是引擎直接使用的格式，大多数引擎都有自己的纹理格式）
+* 如何通过 OpenGL 将硬盘中的 png 图片显示到屏幕上（png 并不是引擎直接使用的格式，大多数引擎都有自己的纹理格式）
   * 将图像加载到内存中——`stb_image`
   * 获取像素的数组，然后传到显存中——OpenGL
   * 通过着色器来读取纹理，并计算出真正的像素值——像素/片段着色器（绑定纹理）
-  * 在OpenGL中，用slots来绑定纹理，可以一次性绑定多个纹理
-    * 在Windows上有32个slots
-    * 在移动设备，Android或IOS上可能会有8个slots
-  * OpenGL加载纹理是从左下角开始，即左下角的坐标是`(0, 0)`，正常加载的图片是从左上角开始遍历，所以加载图片后需要垂直翻转
+  * 在 OpenGL 中，用 slots 来绑定纹理，可以一次性绑定多个纹理
+    * 在 Windows 上有 32 个 slots
+    * 在移动设备，Android 或 IOS 上可能会有 8 个 slots
+  * OpenGL 加载纹理是从左下角开始，即左下角的坐标是`(0, 0)`，正常加载的图片是从左上角开始遍历，所以加载图片后需要垂直翻转
   * 纹理坐标
     * 指定每个顶点对应的纹理是什么，根据顶点对应的**纹理坐标**进行采样
     * 片段着色器会根据要渲染的像素的位置，进行插值计算具体的颜色值
+* 混合
+  * Blending determies how we combine our output color with what is already in our target buffer
+    * Output: the color we output from our fragment shader 从片段着色器中输出的颜色 **SRC**
+    * Target buffer: the buffer our fragment shader is drawing to 已经存在的缓冲区上的颜色 **DEST**
+  * 如何控制混合
+    * `glEnable`、`glDisable`
+    * `glBlendFunc(src, dest)`
+      * src: how the src RGBA factor is computed (default is `GL_ONE`) 默认是 1，每个通道都是单独计算的
+      * dest: how the dest RGBA factor is computed (default is `GL_ZERO`) 默认是 0，也就是说 src 会覆盖到 dest 上面
+    * `glBlendEquation(mode)`
+      * mode: how we combine the src and dest colors
+      * Default value is `GL_FUNC_ADD`
+* 投影矩阵
+  * 投影就是在多维空间中确定坐标系
+  * 将场景中三维空间中的坐标转换到NDC（Normalized Device Coordinates），即标准空间
+  * 在窗口中渲染的内容的坐标范围必须从左到右在`[-1, 1]`之间，从上到下在`[-1, 1]`之间
+  * 投影矩阵的作用就是决定坐标空间是什么样的
+    * 无论是正交（Orthographic）处理后的顶点，还是透视（Perspective）处理后的顶点，最终都会映射到标准空间中
+* 视图矩阵 相机的变换（位移和方向）
+* 模型矩阵 对象的变换（位移、旋转、缩放，TRS）
+* ImGUI
 
 ### APIs
 
