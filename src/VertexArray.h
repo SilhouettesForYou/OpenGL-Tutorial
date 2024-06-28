@@ -1,5 +1,4 @@
-#ifndef VERTEXAEEAY
-#define VERTEXAEEAY
+#pragma once
 #include "VertexBuffer.h"
 
 class VertexBufferLayout;
@@ -17,4 +16,3 @@ public:
     void Bind() const;
     void Unbind() const;
 };
-#endif

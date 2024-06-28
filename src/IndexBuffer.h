@@ -1,5 +1,4 @@
-#ifndef INDEXBUFFER
-#define INDEXBUFFER
+#pragma once
 class IndexBuffer
 {
 private:
@@ -13,4 +12,3 @@ public:
     void Unbind() const;
     unsigned int GetCount() const;
 };
-#endif

@@ -9,12 +9,9 @@
 #include <sstream>
 #include <filesystem>
 
-#include "VertexBufferLayout.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "tests/Test.h"
+#include "tests/TestClearColor.h"
+#include "tests/TestTexture2D.h"
 
 int main(void)
 {
@@ -42,61 +39,24 @@ int main(void)
     
     std::cout << glGetString(GL_VERSION) << std::endl;
     {
-        float positions[] = {
-            100.0f, 100.0f, 0.0f, 0.0f,
-            200.0f, 100.0f, 1.0f, 0.0f,
-            200.0f, 200.0f, 1.0f, 1.0f,
-            100.0f, 200.0f, 0.0f, 1.0f
-        };
-
-        unsigned int indices[] = {
-            0, 1, 2,
-            2, 3, 0
-        };
-
-        GLCall(glEnable(GL_BLEND));
-        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-        VertexArray va;
-        VertexBuffer vb(positions, 4 * 4 * sizeof(float));
-        VertexBufferLayout layout;
-        layout.Push(2);
-        layout.Push(2);
-        va.AddBuffer(vb, layout);
-        IndexBuffer ib(indices, 6);
-
-        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
-
-        Shader shader("../../../../res/Shaders/Basic.shader");
-        shader.Bind();
-        shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-
-        Texture texture("../../../../res/Textures/test.png");
-        texture.Bind();
-        shader.SetUniform1i("u_Texture", 0);
-
-        // unbind buffer
-        va.Unbind();
-        shader.Unbind();
-        vb.Unbind();
-        ib.Unbind();
-        Renderer renderer;
-
         ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 130");
 
-        float r = 0.8f;
-        float inc = 0.05f;
-        glm::vec3 translation = glm::vec3(200, 200, 0);
+        test::Test* currentTest = nullptr;
+        test::TestMenu* testMenu = new test::TestMenu(currentTest);
+        currentTest = testMenu;
+
+        testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+        testMenu->RegisterTest<test::TestTexture2D>("Texture 2D");
+
+        Renderer renderer;
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
-            /* Render here */
+            GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
             renderer.Clear();
 
             // Start the Dear ImGui frame
@@ -104,25 +64,18 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-            glm::mat4 mvp = proj * view * model;
-
-            // binding multiple objects
-            shader.Bind();
-            shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-            shader.SetUniformMat4f("u_MVP", mvp);
-            
-            renderer.Draw(va, ib, shader);
-
-            if (r > 1.0f)
-                r = -0.05f;
-            else if (r < 0.0f)
-                r = 0.05f;
-            r += inc;
-
+            if (currentTest)
             {
-                ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+                currentTest->OnUpdate(0.0f);
+                currentTest->OnRender();
+                ImGui::Begin("Test");
+                if (currentTest != testMenu && ImGui::Button("<-"))
+                {
+                    delete currentTest;
+                    currentTest = testMenu;
+                }
+                currentTest->OnImGuiRender();
+                ImGui::End();
             }
 
             // Rendering
@@ -134,7 +87,9 @@ int main(void)
             /* Poll for and process events */
             glfwPollEvents();
         }
-
+        delete currentTest;
+        if (currentTest != testMenu)
+            delete testMenu;
     }
 
     // Cleanup

@@ -108,9 +108,3 @@ target("HelloOpenGL")
 * `glTexParameteri`
 * `glTexImage2D`
 * `glActiveTexture`
-* `glClear`
-  * 不调用`glClear`的话，下一帧的内容会和上一帧的内容重叠在一起，上一帧的物体还在原来的地方
-  * `glClearColor`
-    * 指定刷新颜色缓冲区时所用的颜色
-    * `glClearColor`只是设置缓冲区颜色，并不不会清除缓冲区的颜色，需要在设置好颜色之后调用`glClear`才会刷新缓冲区的颜色
-    * `glClearColor`并不是必须的
